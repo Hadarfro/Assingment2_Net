@@ -89,6 +89,8 @@ def server(host: str, port: int) -> None:
 
         # Prepare the server socket
         # * Fill in start (1)
+        server_socket.bind((host, port))
+        server_socket.listen(1)
         # * Fill in end (1)
 
         threads = []
@@ -98,7 +100,13 @@ def server(host: str, port: int) -> None:
             try:
                 # Establish connection with client.
                 
-                client_socket, address = # * Fill in start (2) # * Fill in end (2)
+                client_socket, address = server_socket.accept()
+                # * Fill in start (2)
+                data = client_socket.recv(8180).decode()
+                res = data.upper()
+                client_socket.send(res.encode(),CACHE_POLICY)
+
+                # * Fill in end (2)
 
                 # Create a new thread to handle the client request
                 thread = threading.Thread(target=client_handler, args=(
