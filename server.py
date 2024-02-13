@@ -7,6 +7,7 @@ import threading
 CACHE_POLICY = True  # whether to cache responses or not
 # the maximum time that the response can be cached for (in seconds)
 CACHE_CONTROL = 2 ** 16 - 1
+CACHE_SIZE = 8180
 
 
 def calculate(expression: api.Expr, steps: list[str] = []) -> tuple[numbers.Real, list[api.Expression]]:
@@ -129,9 +130,7 @@ def client_handler(client_socket: socket.socket, client_address: tuple[str, int]
         print(f"Conection established with {client_addr}")
         while True:
             
-            data = client_socket.recv(8180).decode() # * Fill in start (3)
-            res = data.upper()
-            client_socket.send(res.encode(), CACHE_POLICY)
+            data = client_socket.recv(CACHE_SIZE) # * Fill in start (3)
             # * Fill in end (3)
             if not data:
                 break
@@ -152,7 +151,7 @@ def client_handler(client_socket: socket.socket, client_address: tuple[str, int]
                     f"{client_prefix} Sending response of length {len(response)} bytes")
 
                 # * Fill in start (4)
-                client_socket.close()
+                client_socket.send(response)
                 # * Fill in end (4)
 
             except Exception as e:

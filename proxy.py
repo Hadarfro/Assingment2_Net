@@ -7,6 +7,7 @@ import math
 
 cache: dict[tuple[bytes, bool], api.CalculatorHeader] = {}
 INDEFINITE = api.CalculatorHeader.MAX_CACHE_CONTROL
+CACHE_SIZE = 8180
 
 
 def process_request(request: api.CalculatorHeader, server_address: tuple[str, int]) -> tuple[api.CalculatorHeader, int, int, bool, bool, bool]:
@@ -85,7 +86,7 @@ def proxy(proxy_address: tuple[str, int], server_adress: tuple[str, int]) -> Non
 
         # Prepare the proxy socket
         # * Fill in start (1)
-        proxy_socket.bind((proxy_address, server_port))
+        proxy_socket.bind((proxy_address))
         proxy_socket.listen(1)
         # * Fill in end (1)
 
@@ -121,8 +122,7 @@ def client_handler(client_socket: socket.socket, client_address: tuple[str, int]
         while True:
             # Receive data from the client
             
-            data = client_socket.recv(8180).decode()# * Fill in start (3)
-            res = data.upper()
+            data = client_socket.recv(CACHE_SIZE) # * Fill in start (3)
             # * Fill in end (3)
             
             if not data:
@@ -158,8 +158,7 @@ def client_handler(client_socket: socket.socket, client_address: tuple[str, int]
 
                 # Send the response back to the client
                 # * Fill in start (4)
-                client_socket.send(res.encode())
-                client_socket.close()
+                client_socket.send(response)
                 # * Fill in end (4)
                 
             except Exception as e:
